@@ -20,7 +20,7 @@ public final class Board implements Cloneable {
     }
 
     public void set(int x, int y, Stone s) {
-    cells[x][y] = s;
+        cells[x][y] = s;
     }
 
     public Stone get(int x, int y) {
