@@ -1,11 +1,14 @@
 package com.example.model;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-public class Board implements Cloneable {
+
+public final class Board implements Cloneable {
     private final int size;
     private Stone[][] cells;
 
     public Board(int size) {
-        this.size = size();
+        this.size = size;
         this.cells = new Stone[size][size];
         for (int i = 0; i<size; i++) {
             Arrays.fill(cells[i], Stone.EMPTY);
@@ -15,7 +18,11 @@ public class Board implements Cloneable {
     public int getSize() {
         return size;
     }
-    
+
+    public void set(int x, int y, Stone s) {
+    cells[x][y] = s;
+    }
+
     public Stone get(int x, int y) {
         return cells[x][y];
     }
@@ -29,7 +36,7 @@ public class Board implements Cloneable {
         if (isOnBoard(x-1, y)) list.add(new Position(x-1, y));
         if (isOnBoard(x+1, y)) list.add(new Position(x+1, y));
         if (isOnBoard(x, y-1)) list.add(new Position(x, y-1));
-        if (isOnBoard(x, y+1)) list.add(new Position(x-1, y+1));
+        if (isOnBoard(x, y+1)) list.add(new Position(x, y+1));
         return list;
     }
 
@@ -61,7 +68,7 @@ public class Board implements Cloneable {
 
             if (neighbour != Stone.EMPTY && isSurrounded(nx, ny))
             {
-                set(nx, ny, Stnoe.EMPTY);
+                set(nx, ny, Stone.EMPTY);
             }
         }
         return MoveResult.ok(captures, this.clone());

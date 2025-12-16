@@ -11,6 +11,26 @@ public class Move {
         this.playerId = playerId;
     }
 
+    public MoveType getType() {
+        return type;
+    }
+
+    public Position getPos() {
+        return pos;
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public int getX() {
+        return pos.getX();
+    }
+
+    public int getY() {
+        return pos.getY();
+    }
+
     public static Move parse(String line, String playerId) {
         // np. MOVE 3 4
         String[] parts = line.trim().split("\\s+");

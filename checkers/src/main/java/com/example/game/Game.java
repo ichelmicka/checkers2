@@ -1,5 +1,8 @@
 package com.example.game;
+
+import com.example.model.*;
 import java.util.*;
+
 
 
 public class Game {
@@ -18,14 +21,14 @@ public class Game {
     }
 
     public void start() {
-        if (players.size == 2) {
+        if (players.size() == 2) {
             state = GameState.RUNNING;
         }
     }
 
     public MoveResult applyMove(Move move) {
-        if (state != GameState.RUNNING) return new MoveReslult(false, "Game not running");
-        if (move.getColor() != currentTurn) return new MoveResult(false, "Not your turn");
+        if (state != GameState.RUNNING) return MoveResult.error("Game not running");
+        if (move.getColor() != currentTurn) return MoveResult.error("Not your turn");
 
         MoveResult result = board.placeStone(move.getX(), move.getY(), move.getColor());
 
@@ -35,7 +38,7 @@ public class Game {
 
         int captured = result.getCaptures().size();
         
-        Player current = players.get(move.getColor()); //wez gracza, ktory gra kolorem podanym w ruchu
+        Player current = players.get(move.getPlayerId()).getColor(); //wez gracza, ktory gra kolorem podanym w ruchu
         current.addPrisoners(captured);
         
         if (currentTurn == Stone.BLACK) {

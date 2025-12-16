@@ -8,7 +8,7 @@ import java.util.List;
 public final class MoveResult {
     private final boolean ok;
     private final String errorMessage;
-    private final List<Positions> captures;
+    private final List<Position> captures;
     private final Board boardSnapshot;
 
     private MoveResult(boolean ok, String errorMessage, List<Position> captures, Board boardSnapshot) {
@@ -36,7 +36,7 @@ public final class MoveResult {
         return errorMessage;
     }
 
-    public List<Positions> getCaptures() {
+    public List<Position> getCaptures() {
         return captures;
     }
 
@@ -47,7 +47,7 @@ public final class MoveResult {
     @Override
     public String toString() {
         if (!ok) {
-            return "MoveResult(ERROR: " + erroeMessage + ")";
+            return "MoveResult(ERROR: " + errorMessage + ")";
         }
         return "MoveResult(OK, captures=" + captures.size() + ")";
     }
