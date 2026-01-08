@@ -1,6 +1,6 @@
-com/example/game/GameTest.class
-com/example/model/PlayerTest.class
-com/example/model/BoardTest.class
-com/example/model/MoveTest.class
-com/example/server/ClientHandlerTest.class
-com/example/model/MoveResultTest.class
+com/example/ClientHandlerTest.class
+com/example/MoveTest.class
+com/example/PlayerTest.class
+com/example/GameTest.class
+com/example/BoardTest.class
+com/example/MoveResultTest.class
