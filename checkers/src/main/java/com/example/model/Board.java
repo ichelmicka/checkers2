@@ -41,7 +41,7 @@ public final class Board implements Cloneable {
     }
 
     //jesli sasiad jest otoczony usuwamy go
-    public MoveResult placeStone(int x, int y, Stone color)
+    /*public MoveResult placeStone(int x, int y, Stone color)
     {
         if (!isOnBoard(x, y)) {
             return MoveResult.error("Poza plansza");
@@ -89,7 +89,7 @@ public final class Board implements Cloneable {
         }
 
         return true;
-    }
+    }*/
 
 
     @Override

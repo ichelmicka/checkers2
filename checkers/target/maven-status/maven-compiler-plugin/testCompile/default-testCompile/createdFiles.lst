@@ -1,6 +1,7 @@
 com/example/ClientHandlerTest.class
 com/example/MoveTest.class
-com/example/PlayerTest.class
+com/example/GoRulesTest.class
 com/example/GameTest.class
 com/example/BoardTest.class
+com/example/PlayerTest.class
 com/example/MoveResultTest.class

@@ -20,7 +20,7 @@ public class GroupFinder {
         Group group = new Group(color);
         boolean[][] visited = new boolean[board.getSize()][board.getSize()];
 
-        Deque<Positions> stack = new ArrayDeque<>();
+        Deque<Position> stack = new ArrayDeque<>();
         stack.push(new Position(x, y));
 
         int[][] dirs = {{1,0}, {-1, 0}, {0,1}, {0,-1}};
@@ -30,10 +30,10 @@ public class GroupFinder {
             int px = p.x;
             int py = p.y;
 
-            if (visited[px][py]) {
+            if (visited[py][px]) {
                 continue;
             }
-            visited[px][py] = true;
+            visited[py][px] = true;
             group.stones.add(p);
 
             for (int[] d : dirs) {
@@ -47,7 +47,7 @@ public class GroupFinder {
                 if (s == Stone.EMPTY) {
                     group.liberties.add(new Position(nx, ny));
                 }
-                else if (s == color && !visited[nx][ny]) {
+                else if (s == color && !visited[ny][nx]) {
                     stack.push(new Position(nx, ny));
                 }
             }

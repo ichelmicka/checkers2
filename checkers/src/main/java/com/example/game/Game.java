@@ -1,6 +1,7 @@
 package com.example.game;
 
 import com.example.model.*;
+import com.example.rules.*;
 import java.util.*;
 
 
@@ -10,6 +11,8 @@ public class Game {
     private Map<String, Player> players = new HashMap<>();
     private Stone currentTurn;
     private GameState state;
+
+    private final Rules rules = new GoRules();
 
     public Game(int boardSize) {
         this.board = new Board(boardSize);
@@ -56,23 +59,24 @@ public class Game {
         if (state != GameState.RUNNING) return MoveResult.error("Game not running");
         if (current.getColor() != currentTurn) return MoveResult.error("Not your turn");
 
-        MoveResult result = board.placeStone(move.getX(), move.getY(), current.getColor());
+        MoveResult result = rules.applyMove(board, move.getX(), move.getY(), current.getColor());
 
         if (!result.isOk()) {
             return result;
         }
-
+        //aktualizacja planszy
+        board = result.getBoardSnapshot();
+        //policz jencow
         int captured = result.getCaptures().size();
-        
         current.addPrisoners(captured);
-        
+        //zmiana tury
         if (currentTurn == Stone.BLACK) {
             currentTurn = Stone.WHITE;
         }
         else {
             currentTurn = Stone.BLACK;
         }
-
+        //powiadom listenerow
         notifyMove(move, result, result.getBoardSnapshot());
 
         return result;
