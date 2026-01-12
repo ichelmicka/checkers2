@@ -4,6 +4,7 @@ import com.example.model.Board;
 import com.example.model.MoveResult;
 import com.example.model.Position;
 import com.example.model.Stone;
+import com.example.rules.TerritoryScorer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +28,16 @@ public class MainGui {
 
     private JFrame frame;
     private BoardPanel boardPanel;
+    private JPanel sidePanel;
+    private JPanel bottom;
+    private JLabel myColorLabel;
     private JLabel statusLabel;
+    private JLabel connectionLabel;
+    private JLabel scoreLabel;
+
+    private final int cellSize = 48; // piksele
+    private final int margin = 20;
+
 
     private GoClient client;
 
@@ -41,12 +51,7 @@ public class MainGui {
     }
 
     private void connectToServer() {
-        client = new GoClient(
-                "localhost",
-                8888,
-                this::onServerMessage,
-                this::onServerError
-        );
+        client = new GoClient("localhost", 8888, this::onServerMessage, this::onServerError);
 
         client.send("JOIN Player1");
     }
@@ -56,19 +61,45 @@ public class MainGui {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
 
-        boardPanel = new BoardPanel();
-        boardPanel.setPreferredSize(new Dimension(800, 800));
-
+        // PANEL GÓRNY (status połączenia) ---
         statusLabel = new JLabel("Connecting...");
-
         JPanel top = new JPanel();
         top.add(statusLabel);
-
         frame.add(top, BorderLayout.NORTH);
+
+        // PANEL PLANSZY ---
+        boardPanel = new BoardPanel();
+        boardPanel.setPreferredSize(new Dimension(boardSize * cellSize + margin * 2, boardSize * cellSize + margin * 2));
         frame.add(boardPanel, BorderLayout.CENTER);
 
+        // PANEL BOCZNY (kolor gracza, tura, itp.) ---
+        JPanel sidePanel = new JPanel();
+        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.setPreferredSize(new Dimension(180, 400));
+
+        // PANEL DOLNY (wynik)
+        JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        scoreLabel = new JLabel("Score: ?");
+        bottom.add(scoreLabel);
+
+        frame.add(bottom, BorderLayout.SOUTH);
+
+        //boczny panel
+        myColorLabel = new JLabel("You are: ?");
+        connectionLabel = new JLabel("Status: Connecting...");
+
+        sidePanel.add(myColorLabel);
+        sidePanel.add(Box.createVerticalStrut(10));
+        sidePanel.add(Box.createVerticalStrut(10));
+        sidePanel.add(connectionLabel);
+        sidePanel.add(Box.createVerticalStrut(10));
+
+        frame.add(sidePanel, BorderLayout.EAST);
+
+        // WYŚWIETLENIE OKNA ---
         frame.pack();
         frame.setVisible(true);
+
     }
 
     //obsluga wiadomosci z serwera
@@ -80,7 +111,10 @@ public class MainGui {
             // ASSIGN <playerId> <color>
             String[] p = msg.split(" ");
             myColor = Stone.valueOf(p[2]);
-            SwingUtilities.invokeLater(() -> statusLabel.setText("You are: " + myColor));
+            SwingUtilities.invokeLater(() -> {
+                myColorLabel.setText("You are: " + myColor);
+                connectionLabel.setText("Status: Connected");
+            });
         }
 
         else if (msg.startsWith("INFO")) {
@@ -94,7 +128,15 @@ public class MainGui {
         else if (msg.startsWith("BOARD")) {
             // następne linie to tekst planszy
             readBoardFromServer();
+            SwingUtilities.invokeLater(this::showScore);
         }
+    }
+
+    private void showScore() {
+        if (board == null) return;
+        TerritoryScorer.Score s = TerritoryScorer.score(board);
+        String msg = String.format("Score:\nBlack: stones=%d territory=%d total=%d\nWhite: stones=%d territory=%d total=%d", s.blackStones, s.blackTerritory, s.blackScore, s.whiteStones, s.whiteTerritory, s.whiteScore);
+        scoreLabel.setText(msg);
     }
 
     private void readBoardFromServer() {
