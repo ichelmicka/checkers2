@@ -8,15 +8,6 @@ import java.util.*;
 
 /**
  * Oblicza terytorium i punkty (stones + territory) z wykryciem seki.
- *
- * Algorytm:
- * 1) flood-fill pustych regionów -> zapamiętujemy pozycje oraz kolory kamieni, które je ograniczają,
- * 2) flood-fill grup kamieni -> zbieramy kamienie, ich oddechy i które regiony pustek stykają,
- * 3) regiony graniczące z >1 kolorem są neutralne,
- * 4) grupa jest w seki, jeśli styka się z regionem neutralnym,
- * 5) terytorium przyznajemy tylko regionom, które:
- *      - mają dokładnie jeden kolor graniczący,
- *      - żadna z graniczących z nimi grup tego koloru nie jest w seki.
  */
 public final class TerritoryScorer {
 
@@ -31,7 +22,7 @@ public final class TerritoryScorer {
     public static Score score(Board board) {
         int size = board.getSize();
 
-        // 1) znajduje wszystkie puste regiony i nadaje im ID
+        // 1) znajdź wszystkie puste regiony i nadaj im ID
         int[][] regionId = new int[size][size];
         for (int i = 0; i < size; i++) Arrays.fill(regionId[i], -1);
         Map<Integer, Region> regions = new HashMap<>();
@@ -70,7 +61,7 @@ public final class TerritoryScorer {
             }
         }
 
-        // 2) znajduje grupy kamieni i powiązuje z regionami pustek
+        // 2) znajdź wszystkie grupy kamieni i powiąż je z regionami pustek
         boolean[][] seen = new boolean[size][size];
         Map<Integer, StoneGroup> groups = new HashMap<>();
         int nextGroupId = 0;
@@ -116,17 +107,26 @@ public final class TerritoryScorer {
             if (r.borderingColors.size() != 1) neutralRegions.add(r.id);
         }
 
-        // 4) grupy w seki -> kontakt z regionem neutralnym
+        // 4) grupy w seki -> nowa reguła:
+        // grupa jest w seki tylko wtedy, gdy ma co najmniej jedno adjacentRegionId
+        // i wszystkie regiony z którymi się styka są neutralne.
         for (StoneGroup g : groups.values()) {
+            if (g.adjacentRegionIds.isEmpty()) {
+                g.isSeki = false;
+                continue;
+            }
+            boolean allNeutral = true;
             for (Integer rid : g.adjacentRegionIds) {
-                if (neutralRegions.contains(rid)) {
-                    g.markSeki();
+                if (!neutralRegions.contains(rid)) {
+                    allNeutral = false;
                     break;
                 }
             }
+            g.isSeki = allNeutral;
         }
 
-        // 5) liczy kamienie i przydziela terytorium
+        // 5) policz kamienie i przydziel terytorium (regiony z dokładnie 1 kolorem granicznym
+        // i bez przylegających grup tego koloru oznaczonych jako seki)
         int blackStones = 0;
         int whiteStones = 0;
         for (int y = 0; y < size; y++) {
