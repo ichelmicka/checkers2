@@ -19,6 +19,7 @@ import java.util.concurrent.*;
  */
 public class Server implements GameListener {
     private static Server instance;
+    private boolean lastMoveWasPass = false;
 
     public static synchronized Server getInstance(int port, int boardSize) {
         if (instance == null) instance = new Server(port, boardSize);
@@ -109,10 +110,43 @@ public class Server implements GameListener {
         }
     }
 
+    public void handlePass(ClientHandler origin) {
+    Player p = origin.getPlayer();
+    if (p == null) {
+        origin.send("ERROR You are not registered");
+        return;
+    }
+
+        synchronized (game) {
+            if (game.getState() != GameState.RUNNING) {
+                origin.send("ERROR Game not running");
+                return;
+            }
+            if (p.getColor() != game.getCurrentTurn()) {
+                origin.send("ERROR Not your turn");
+                return;
+            }
+
+            broadcast("PASS " + p.getId());
+
+            if (lastMoveWasPass) {
+                broadcast("END");
+                broadcastBoard();
+                return;
+            }
+
+            lastMoveWasPass = true;
+            game.nextTurn();
+            broadcast("INFO Next turn: " + game.getCurrentTurn());
+        }
+    }
+
+
     // GameListener implementation — wywoływane po poprawnym ruchu
     @Override
     public void onMoveApplied(Move move, MoveResult result, Board snapshotBoard) {
         // broadcast info
+        lastMoveWasPass = false;
         broadcast("MOVE " + move.playerId + " " + (move.pos.x) + " " + (move.pos.y));
         if (result.getCaptures() != null && !result.getCaptures().isEmpty()) {
             broadcast("CAPTURE " + result.getCaptures().size());

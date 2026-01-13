@@ -55,7 +55,15 @@ public class ClientHandler implements Runnable {
 
             // główna pętla czytająca ruchy
             while ((line = in.readLine()) != null) {
-                server.handleRawMove(line, this);
+                line = line.trim(); 
+                if (line.equalsIgnoreCase("PASS")) { 
+                    server.handlePass(this); continue; 
+                } 
+                if (line.toUpperCase().startsWith("MOVE")) 
+                { 
+                    server.handleRawMove(line, this); continue; 
+                } 
+                send("ERROR Unknown command");
             }
         } catch (IOException e) {
             System.out.println("Client disconnected: " + e.getMessage());

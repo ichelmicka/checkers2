@@ -90,4 +90,9 @@ public class Game {
         return state;
     }
 
+    public void nextTurn() {
+        currentTurn = (currentTurn == Stone.BLACK ? Stone.WHITE : Stone.BLACK);
+    }
+
+
 }

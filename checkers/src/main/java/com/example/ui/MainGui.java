@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
+
 /**
  * GUI w Swing do gry:
  * - plansza rysowana Swingiem,
@@ -25,6 +26,8 @@ public class MainGui {
     private Board board = new Board(boardSize);
     private Stone myColor = Stone.EMPTY;
     private Stone currentTurn = Stone.BLACK;
+
+    private JButton passButton;
 
     private JFrame frame;
     private BoardPanel boardPanel;
@@ -79,6 +82,10 @@ public class MainGui {
 
         // PANEL DOLNY (wynik)
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton passButton = new JButton("PASS"); 
+        passButton.addActionListener(e -> sendPass());
+        bottom.add(passButton);
+
         scoreLabel = new JLabel("Score: ?");
         bottom.add(scoreLabel);
 
@@ -95,6 +102,8 @@ public class MainGui {
         sidePanel.add(Box.createVerticalStrut(10));
 
         frame.add(sidePanel, BorderLayout.EAST);
+
+        
 
         // WYŚWIETLENIE OKNA ---
         frame.pack();
@@ -138,6 +147,11 @@ public class MainGui {
         String msg = String.format("Score:\nBlack: stones=%d territory=%d total=%d\nWhite: stones=%d territory=%d total=%d", s.blackStones, s.blackTerritory, s.blackScore, s.whiteStones, s.whiteTerritory, s.whiteScore);
         scoreLabel.setText(msg);
     }
+
+    private void sendPass() {
+        client.send("PASS");
+    }
+
 
     private void readBoardFromServer() {
         try {
