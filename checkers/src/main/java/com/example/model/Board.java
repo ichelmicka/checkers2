@@ -90,15 +90,21 @@ public final class Board implements Cloneable {
         return dead[y][x];
     }
 
-    public void debugDead() {
-        System.out.println("DEAD MATRIX:");
+
+    public void updateFromString(String data) {
+        String[] lines = data.split("\n");
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
-                System.out.print(dead[y][x] ? "X " : ". ");
+                char c = lines[y].charAt(x);
+                switch (c) {
+                    case 'B': cells[y][x] = Stone.BLACK; break;
+                    case 'W': cells[y][x] = Stone.WHITE; break;
+                    default:  cells[y][x] = Stone.EMPTY; break;
+                }
             }
-            System.out.println();
         }
     }
+
 
 
 

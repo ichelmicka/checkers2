@@ -229,7 +229,7 @@ public class Server implements GameListener {
 
         // delegacja do Game
         boolean ok = game.getBoard().markGroup(x, y, status.equals("DEAD"));
-        game.getBoard().debugDead();
+
         if (!ok) {
             origin.send("ERROR Cannot mark group");
             return;

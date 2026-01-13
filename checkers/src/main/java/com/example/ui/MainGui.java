@@ -202,7 +202,16 @@ public class MainGui {
             gameState = GameState.RUNNING; 
         } else if (msg.equals("END")) { 
             gameState = GameState.FINISHED; 
-        } 
+        } else if (msg.startsWith("MARK")) {
+            String[] p = msg.split(" ");
+            int x = Integer.parseInt(p[1]);
+            int y = Integer.parseInt(p[2]);
+            boolean dead = p[3].equals("DEAD");
+
+            board.markGroup(x, y, dead);
+            boardPanel.repaint();
+        }
+
     }
 
     /**
@@ -257,7 +266,7 @@ public class MainGui {
                 if (line == null) throw new IllegalStateException("Unexpected end of board from server");
                 sb.append(line).append("\n");
             }
-            board = Board.fromString(sb.toString());
+            board.updateFromString(sb.toString());
             SwingUtilities.invokeLater(() -> {
                 showScore();
                 boardPanel.repaint();
@@ -367,8 +376,6 @@ public class MainGui {
                         int px = cell / 2 + x * cell - cell / 2; 
                         int py = cell / 2 + y * cell - cell / 2; 
                         g2.fillOval(px, py, cell, cell); 
-                        System.out.println("GUI dead[" + x + "," + y + "] = " + board.isDead(x, y));
-
                     } 
                 }
             }
