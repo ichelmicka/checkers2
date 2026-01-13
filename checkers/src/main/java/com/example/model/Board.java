@@ -86,6 +86,15 @@ public final class Board implements Cloneable {
         return true; 
     }
 
+    //czysci oznaczone wczesniej martwe pola, gdy gracze nie mogą dojść do porozumienia
+    public void clearDeadMarks() {
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                dead[y][x] = false;
+            }
+        }
+    }
+
     public boolean isDead(int x, int y) {
         return dead[y][x];
     }

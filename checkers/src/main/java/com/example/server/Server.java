@@ -184,15 +184,24 @@ public class Server implements GameListener {
             return;
         }
 
-        Player p = origin.getPlayer();
+        Player requester = origin.getPlayer();
+        Stone requesterColor = requester.getColor();
 
-        // zmiana tury: przeciwnik zaczyna
-        game.nextTurn();
+        Stone nextTurn;
+
+        //przeciwnik gra pierwszy
+        if (requesterColor == Stone.BLACK) {
+            nextTurn = Stone.WHITE;
+        } else {
+            nextTurn = Stone.BLACK;
+        }
+
+        game.setCurrentTurn(nextTurn);
 
         game.setState(GameState.RUNNING);
-
+        //powiadom klientow
         broadcast("RESUME");
-        broadcast("INFO Game resumed. Current turn: " + game.getCurrentTurn());
+        broadcast("INFO Next turn: " + nextTurn);
     }
 
     public void handleMark(String raw, ClientHandler origin) {

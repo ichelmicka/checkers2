@@ -50,6 +50,10 @@ public class Game {
         }
     }
 
+    public void setCurrentTurn(Stone turn) {
+        currentTurn = turn;
+    }
+
     private Player getBlackPlayer() {
         return players.values().stream().filter(p -> p.getColor() == Stone.BLACK).findFirst().orElse(null);
     }

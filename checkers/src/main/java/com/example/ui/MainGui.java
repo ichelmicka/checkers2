@@ -46,6 +46,7 @@ public class MainGui {
     private JButton passButton;
     private JButton resgnButton;
     private JButton acceptButton;
+    private JButton resumeButton;
 
     private JFrame frame;
     private BoardPanel boardPanel;
@@ -136,8 +137,12 @@ public class MainGui {
         resgnButton.addActionListener(e -> sendResign());
         bottom.add(resgnButton);
 
-        JButton acceptButton = new JButton("ACCEPT");
+        acceptButton = new JButton("ACCEPT");
         acceptButton.addActionListener(e -> client.send("ACCEPT"));
+        bottom.add(acceptButton);
+
+        acceptButton = new JButton("RESUME");
+        acceptButton.addActionListener(e -> client.send("RESUME"));
         bottom.add(acceptButton);
 
 
@@ -205,7 +210,9 @@ public class MainGui {
             gameState = GameState.SCORING;
             boardPanel.repaint(); 
         } else if (msg.equals("RESUME")) { 
-            gameState = GameState.RUNNING; 
+            gameState = GameState.RUNNING;
+            board.clearDeadMarks();
+            boardPanel.repaint(); 
         } else if (msg.equals("END")) { 
             gameState = GameState.FINISHED; 
         } else if (msg.startsWith("MARK")) {

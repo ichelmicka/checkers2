@@ -67,6 +67,10 @@ public class ClientHandler implements Runnable {
                 {
                     server.handleAccept(this); continue;
                 }
+                else if (line.equalsIgnoreCase("RESUME"))
+                {
+                    server.handleResume(this); continue;
+                }
 
                 if (line.toUpperCase().startsWith("MARK")) 
                 { 
