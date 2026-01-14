@@ -239,7 +239,7 @@ public class Server implements GameListener {
         }
 
         // delegacja do Game
-        boolean ok = game.getBoard().markGroup(x, y, status.equals("DEAD"));
+        boolean ok = game.isMarkedGroupOk(x, y, status.equals("DEAD"));
 
         if (!ok) {
             origin.send("ERROR Cannot mark group");
@@ -274,40 +274,20 @@ public class Server implements GameListener {
 
     //przejecie martwych kamieni przeciwnika po skonczonej grze
     private void finishGame() {
-        Board board = game.getBoard();
-        for (int y = 0; y < board.getSize(); y++) {
-            for (int x = 0; x < board.getSize(); x++) {
+        game.applyFinishToBoard();
 
-                if (board.isDead(x, y)) {
-                    Stone s = board.get(x, y);
-
-                    if (s == Stone.BLACK) {
-                        game.addWhiteCaptures(1);
-                    } else if (s == Stone.WHITE) {
-                        game.addBlackCaptures(1);
-                    }
-
-                    board.set(x, y, Stone.EMPTY);
-                }
-            }
-        }
-
-        int whiteCaptures = game.getWhiteCaptures();
-        int blackCaptures = game.getBlackCaptures();
-
-        //policz terytorium i kamienie
-        TerritoryScorer.Score score = TerritoryScorer.score(board);
-
-        int blackTotal = score.blackTerritory + blackCaptures;
-        int whiteTotal = score.whiteTerritory + whiteCaptures;
+        int blackTotal = game.getBlackScore();
+        int whiteTotal = game.getWhiteScore();
 
         //pokaz wynik
         broadcast("SCORE BLACK " + blackTotal + " WHITE " + whiteTotal); 
 
         if (blackTotal > whiteTotal) {
             broadcast("WINNER BLACK, SCORE BLACK " + blackTotal + " WHITE " + whiteTotal);
-        } else {
+        } else if (whiteTotal > blackTotal) {
             broadcast("WINNER WHITE, SCORE BLACK " + blackTotal + " WHITE " + whiteTotal);
+        } else {
+            broadcast("WINNER NONE, SCORE BLACK " + blackTotal + " WHITE " + whiteTotal);
         }
 
         game.setState(GameState.FINISHED);
@@ -335,7 +315,7 @@ public class Server implements GameListener {
     }
 
     public void broadcastBoard() {
-        broadcast("BOARD\n" + game.getBoard().toString());
+        broadcast("BOARD\n" + game.boardString());
     }
 
     public static void main(String[] args) throws Exception {
