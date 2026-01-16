@@ -2,7 +2,6 @@ com/example/model/PlayerFactory.class
 com/example/rules/GoRules.class
 com/example/model/MoveType.class
 com/example/rules/Rules.class
-com/example/client/Client.class
 com/example/game/GameListener.class
 com/example/model/Board.class
 com/example/model/Stone.class

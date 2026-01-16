@@ -122,6 +122,46 @@ public class Game {
         return result;
     }
 
+    public boolean isMarkedGroupOk(int x, int y, boolean isDead) {
+        return board.markGroup(x, y, isDead);
+    }
+
+    public void applyFinishToBoard() {
+        for (int y = 0; y < board.getSize(); y++) {
+            for (int x = 0; x < board.getSize(); x++) {
+
+                if (board.isDead(x, y)) {
+                    Stone s = board.get(x, y);
+
+                    if (s == Stone.BLACK) {
+                        addWhiteCaptures(1);
+                    } else if (s == Stone.WHITE) {
+                        addBlackCaptures(1);
+                    }
+
+                    board.set(x, y, Stone.EMPTY);
+                }
+            }
+        }
+    }
+
+    public int getWhiteScore() {
+        TerritoryScorer.Score score = TerritoryScorer.score(board);
+        int whiteTotal = score.whiteTerritory + getWhiteCaptures();
+        return whiteTotal;
+    }
+
+    public int getBlackScore() {
+        TerritoryScorer.Score score = TerritoryScorer.score(board);
+        int whiteTotal = score.blackTerritory + getBlackCaptures();
+        return whiteTotal;
+    }
+
+    public String boardString() {
+        return board.toString();
+    }
+
+
     public String serializeState() {
         return board.toString();
     }
